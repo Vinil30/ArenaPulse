@@ -4,12 +4,10 @@ groq
 requests
 bs4
 python-dotenv
-gradio
 pymongo
 schedule
 Pillow
 flask
-openai-agents
 tavily
 asyncio
 langgraph
