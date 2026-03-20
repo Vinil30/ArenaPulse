@@ -1,0 +1,762 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+    --pure-black: #000000;
+    --off-black: #111111;
+    --dark-gray: #222222;
+    --medium-gray: #444444;
+    --light-gray: #888888;
+    --off-white: #f5f5f5;
+    --pure-white: #ffffff;
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--pure-black);
+    color: var(--off-white);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    letter-spacing: -0.02em;
+    overflow-x: hidden;
+}
+
+/* Grain texture */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.01) 0px,
+        rgba(255,255,255,0.01) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* ── Navigation ── */
+.nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 16px 0;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--pure-white);
+    transform: rotate(45deg);
+}
+
+.nav-logo span {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pure-white);
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: var(--light-gray);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    padding: 8px 0;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--pure-white);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover { color: var(--pure-white); }
+.nav-link:hover::after { width: 100%; }
+.nav-link.active { color: var(--pure-white); }
+.nav-link.active::after { width: 100%; }
+
+/* ── Hero ── */
+.hero {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 30px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--light-gray);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--light-gray);
+}
+
+.hero-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 72px;
+    font-weight: 400;
+    line-height: 1.0;
+    color: var(--pure-white);
+    letter-spacing: -1px;
+}
+
+.hero-title em {
+    font-style: italic;
+    color: var(--light-gray);
+}
+
+.hero-right {
+    padding-bottom: 8px;
+}
+
+.hero-intro {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--off-white);
+    margin-bottom: 36px;
+    border-left: 1px solid var(--border-strong);
+    padding-left: 24px;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 40px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stat-number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--pure-white);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--light-gray);
+}
+
+/* ── Sections ── */
+.page-body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px 100px;
+}
+
+/* ── Mission ── */
+.mission-section {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+}
+
+.section-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--light-gray);
+    padding-top: 6px;
+    position: sticky;
+    top: 100px;
+}
+
+.mission-content blockquote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--pure-white);
+    margin-bottom: 40px;
+    position: relative;
+    padding-left: 32px;
+}
+
+.mission-content blockquote::before {
+    content: '"';
+    position: absolute;
+    left: 0;
+    top: -10px;
+    font-size: 80px;
+    color: var(--medium-gray);
+    line-height: 1;
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+.mission-content p {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--light-gray);
+    max-width: 620px;
+}
+
+.mission-content p + p {
+    margin-top: 20px;
+}
+
+/* ── How It Works ── */
+.how-section {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-subtle);
+}
+
+.step {
+    background: var(--off-black);
+    padding: 36px 32px;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.step:hover {
+    background: var(--dark-gray);
+}
+
+.step-number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--dark-gray);
+    line-height: 1;
+    margin-bottom: 20px;
+    transition: color 0.3s;
+}
+
+.step:hover .step-number {
+    color: var(--medium-gray);
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--pure-white);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.step-desc {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--light-gray);
+}
+
+/* ── Principles ── */
+.principles-section {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+}
+
+.principles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.principle {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+    transition: padding-left 0.3s ease;
+}
+
+.principle:first-child {
+    border-top: 1px solid var(--border-subtle);
+}
+
+.principle:hover {
+    padding-left: 12px;
+}
+
+.principle-icon {
+    font-size: 24px;
+    color: var(--medium-gray);
+    padding-top: 2px;
+    transition: color 0.3s;
+    font-style: normal;
+}
+
+.principle:hover .principle-icon {
+    color: var(--pure-white);
+}
+
+.principle-title {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--pure-white);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.principle-desc {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--light-gray);
+}
+
+/* ── Tech Stack ── */
+.tech-section {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: start;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-subtle);
+}
+
+.tech-item {
+    background: var(--off-black);
+    padding: 28px 24px;
+    transition: background 0.3s;
+}
+
+.tech-item:hover {
+    background: var(--dark-gray);
+}
+
+.tech-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--pure-white);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.tech-role {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--light-gray);
+}
+
+/* ── Footer CTA ── */
+.footer-cta {
+    padding: 80px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.footer-cta-text h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 48px;
+    font-weight: 400;
+    color: var(--pure-white);
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.footer-cta-text p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--light-gray);
+    max-width: 440px;
+    line-height: 1.7;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.cta-btn {
+    padding: 18px 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cta-btn-primary {
+    border: 2px solid var(--pure-white);
+    background: transparent;
+    color: var(--pure-white);
+}
+
+.cta-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--pure-white);
+    transition: left 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 0;
+}
+
+.cta-btn-primary:hover::before { left: 0; }
+
+.cta-btn-primary span {
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s;
+}
+
+.cta-btn-primary:hover span { color: var(--pure-black); }
+
+.cta-btn-secondary {
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--light-gray);
+}
+
+.cta-btn-secondary:hover {
+    border-color: var(--border-strong);
+    color: var(--pure-white);
+}
+
+.cta-btn-secondary span {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Scroll Reveal ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .hero-title { font-size: 52px; }
+
+    .mission-section,
+    .how-section,
+    .principles-section,
+    .tech-section {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .section-label { position: static; }
+
+    .steps-grid,
+    .tech-grid { grid-template-columns: 1fr; }
+
+    .footer-cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-cta-text h2 { font-size: 36px; }
+
+    .nav-container { flex-direction: column; gap: 20px; }
+}
+</style>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+    <div class="nav-container">
+        <div class="nav-logo">
+            <div class="logo-icon"></div>
+            <span>ArenaPulse</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/chat" class="nav-link">Chat</a>
+            <a href="/about" class="nav-link active">About</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero reveal">
+    <div class="hero-left">
+        <div class="hero-eyebrow">Est. 2026</div>
+        <h1 class="hero-title">The<br><em>Chronicle</em><br>Journal</h1>
+    </div>
+    <div class="hero-right">
+        <p class="hero-intro">
+            An AI-powered editorial platform that scans the world's news in real time, curates what matters, and delivers it with the clarity of a seasoned editor.
+        </p>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Coverage</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">Sources</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">0</span>
+                <span class="stat-label">Bias</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+
+    <!-- Mission -->
+    <div class="mission-section reveal">
+        <div class="section-label">Mission</div>
+        <div class="mission-content">
+            <blockquote>
+                News should inform, not overwhelm.
+            </blockquote>
+            <p>
+                Chronicle was built on a single conviction: the world produces far more signal than any human can process. We exist to close that gap — not by simplifying, but by intelligently curating.
+            </p>
+            <p>
+                Every hour, our agent scans thousands of sources across politics, technology, science, culture, and finance. It reads, evaluates, and composes — surfacing the stories that shape the moment and presenting them without noise or agenda.
+            </p>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="how-section reveal">
+        <div class="section-label">How It Works</div>
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step-number">01</div>
+                <div class="step-title">Scan</div>
+                <div class="step-desc">The agent continuously monitors hundreds of trusted news sources, RSS feeds, and wire services across every major beat.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <div class="step-title">Evaluate</div>
+                <div class="step-desc">Stories are scored by relevance, recency, and significance. Duplicates are merged. Noise is filtered. Only the essential remains.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <div class="step-title">Compose</div>
+                <div class="step-desc">Each article is rewritten for clarity and concision — preserving the facts, stripping the filler, and sourcing back to the original.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">04</div>
+                <div class="step-title">Deliver</div>
+                <div class="step-desc">Stories appear in the Journal within minutes of breaking. Ask follow-up questions via the Chat assistant at any time.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Principles -->
+    <div class="principles-section reveal">
+        <div class="section-label">Principles</div>
+        <div class="principles-list">
+            <div class="principle">
+                <span class="principle-icon">◈</span>
+                <div>
+                    <div class="principle-title">Transparency</div>
+                    <div class="principle-desc">Every article links directly to its original source. We don't obscure provenance — we celebrate it. You can always verify what we report.</div>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">◇</span>
+                <div>
+                    <div class="principle-title">Neutrality</div>
+                    <div class="principle-desc">Chronicle draws from sources across the political and ideological spectrum. The agent is instructed to report, not editorialize — to present facts, not conclusions.</div>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">○</span>
+                <div>
+                    <div class="principle-title">Clarity</div>
+                    <div class="principle-desc">Complex stories deserve simple language. We write for comprehension first. No jargon. No padding. No word wasted.</div>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">△</span>
+                <div>
+                    <div class="principle-title">Currency</div>
+                    <div class="principle-desc">The world doesn't wait. Neither do we. The agent runs continuously so that when news breaks, Chronicle is ready within the hour.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="tech-section reveal">
+        <div class="section-label">Built With</div>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-name">Claude</div>
+                <div class="tech-role">AI Core &amp; Chat</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name">Flask</div>
+                <div class="tech-role">Web Framework</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name">Python</div>
+                <div class="tech-role">Agent Runtime</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name">Jinja2</div>
+                <div class="tech-role">Templating</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name">RSS &amp; APIs</div>
+                <div class="tech-role">News Ingestion</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name">SQLite</div>
+                <div class="tech-role">Article Storage</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer CTA -->
+    <div class="footer-cta reveal">
+        <div class="footer-cta-text">
+            <h2>Ready to read<br>the world?</h2>
+            <p>Run the agent to fetch today's latest editions, or ask the assistant anything about what's happening right now.</p>
+        </div>
+        <div class="cta-buttons">
+            <a href="/" class="cta-btn cta-btn-primary"><span>Read Today's Edition →</span></a>
+            <a href="/chat" class="cta-btn cta-btn-secondary"><span>Open Chat</span></a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Scroll reveal
+var reveals = document.querySelectorAll('.reveal');
+
+var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+reveals.forEach(function(el) {
+    observer.observe(el);
+});
+
+// Stagger hero on load
+document.addEventListener('DOMContentLoaded', function() {
+    var hero = document.querySelector('.hero');
+    if (hero) {
+        setTimeout(function() { hero.classList.add('visible'); }, 100);
+    }
+});
+</script>
+
