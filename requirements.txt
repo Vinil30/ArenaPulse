@@ -12,9 +12,4 @@ tavily
 asyncio
 langgraph
 openai
-torch
-torchvision
-torchaudio
-accelerate
-safetensors
 pillow
