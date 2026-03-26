@@ -1,0 +1,17 @@
+name: Trigger Agent Daily
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # daily (UTC)
+  workflow_dispatch:       # manual run button
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Render API
+        run: |
+          curl -X POST https://arenapulse.onrender.com/run-agent \
+          -H "Content-Type: application/json" \
+          -d '{}'
