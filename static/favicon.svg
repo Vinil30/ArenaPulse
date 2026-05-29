@@ -1,0 +1,22 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" fill="#000000"/>
+
+  <!-- Top Left -->
+  <rect x="50" y="50" width="72" height="72" fill="#E8E8E8"/>
+
+  <!-- Top Right -->
+  <rect x="134" y="50" width="72" height="72" fill="#8F8F8F"/>
+
+  <!-- Bottom Left -->
+  <rect x="50" y="134" width="72" height="72" fill="#A0A0A0"/>
+
+  <!-- Bottom Right -->
+  <defs>
+    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2B2B2B"/>
+      <stop offset="100%" stop-color="#0F0F0F"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="134" y="134" width="72" height="72" fill="url(#darkGrad)"/>
+</svg>
