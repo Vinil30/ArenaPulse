@@ -6,6 +6,16 @@ from utils.web_scrapper import WebScrapper
 from utils.database import Database
 import base64
 from io import BytesIO
+
+ERROR_ARTICLE_MESSAGE = "The provided summary does not contain sufficient information to generate a coherent news article."
+
+
+def is_invalid_generated_post(post: Dict) -> bool:
+    title = str(post.get("title", "")).strip().lower()
+    content = str(post.get("content", "")).strip().lower()
+    return title == "error" or content == ERROR_ARTICLE_MESSAGE.lower()
+
+
 class AgentState(TypedDict):
     results:List[Dict]
     posts:List[Dict]
@@ -26,6 +36,9 @@ def post_generation(state:AgentState)->AgentState:
 def image_generation(state: AgentState) -> AgentState:
     image_generator = ImageforArenaPulse()
     for post in state["posts"]:
+        if is_invalid_generated_post(post):
+            continue
+
         pil_image = image_generator.generate_image_arena(post["image_prompt"])
         buffer = BytesIO()
         pil_image.save(buffer, format="JPEG")
@@ -38,6 +51,9 @@ def image_generation(state: AgentState) -> AgentState:
 def save_to_db(state:AgentState)->AgentState:
     db = Database()
     for post in state["posts"]:
+        if is_invalid_generated_post(post):
+            continue
+
         db.save_post(post=post)
     return state
 
