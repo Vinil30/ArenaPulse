@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
-from utils.Graph import graph
+from utils.Graph import graph, is_invalid_generated_post
 from utils.database import Database
 from utils.chatbot import ChatBot
 
@@ -9,6 +9,7 @@ load_dotenv()
 
 app = Flask(__name__)
 chatbot = ChatBot()
+MAX_AGENT_RUNS = 3
 
 
 @app.route("/")
@@ -21,17 +22,34 @@ def home():
 @app.route("/run-agent", methods=["POST"])
 def run_agent():
     try:
-        initial_state = {
-            "results": [],
-            "posts": []
-        }
-
         compiled_graph = graph.compile()
-        compiled_graph.invoke(initial_state)
+        last_state = None
 
-        return jsonify({"status": "success", "message": "Pipeline executed successfully"})
+        for attempt in range(1, MAX_AGENT_RUNS + 1):
+            initial_state = {
+                "results": [],
+                "posts": []
+            }
+
+            last_state = compiled_graph.invoke(initial_state)
+            posts = last_state.get("posts", []) if last_state else []
+            valid_posts = [post for post in posts if not is_invalid_generated_post(post)]
+
+            if valid_posts:
+                return jsonify({
+                    "status": "success",
+                    "message": "Pipeline executed successfully",
+                    "attempts": attempt
+                })
+
+        return jsonify({
+            "status": "error",
+            "message": "Pipeline returned only invalid articles after retries",
+            "attempts": MAX_AGENT_RUNS,
+            "last_posts": last_state.get("posts", []) if last_state else []
+        }), 502
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/chat", methods=["GET"])
 def chat_page():
