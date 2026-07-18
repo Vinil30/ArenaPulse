@@ -10,13 +10,52 @@ load_dotenv()
 app = Flask(__name__)
 chatbot = ChatBot()
 MAX_AGENT_RUNS = 3
+INITIAL_POST_LIMIT = 9
+POST_PAGE_SIZE = 9
+
+
+def serialize_post(post):
+    return {
+        "title": post.get("title", ""),
+        "content": post.get("content", ""),
+        "topic": post.get("topic", ""),
+        "source_url": post.get("source_url", "#"),
+        "image": post.get("image")
+    }
 
 
 @app.route("/")
 def home():
     db = Database()
-    posts = list(db.news.find().sort("_id", -1))
-    return render_template("index.html", posts=posts)
+    posts = db.get_latest_posts(limit=INITIAL_POST_LIMIT)
+    total_posts = db.count_posts()
+    return render_template(
+        "index.html",
+        posts=posts,
+        total_posts=total_posts,
+        initial_post_limit=INITIAL_POST_LIMIT,
+        post_page_size=POST_PAGE_SIZE
+    )
+
+
+@app.route("/api/posts")
+def get_posts():
+    try:
+        offset = max(int(request.args.get("offset", 0)), 0)
+        limit = min(max(int(request.args.get("limit", POST_PAGE_SIZE)), 1), 24)
+    except ValueError:
+        return jsonify({"status": "error", "message": "Invalid pagination parameters"}), 400
+
+    db = Database()
+    posts = [serialize_post(post) for post in db.get_latest_posts(limit=limit, skip=offset)]
+    total_posts = db.count_posts()
+    return jsonify({
+        "posts": posts,
+        "total": total_posts,
+        "offset": offset,
+        "limit": limit,
+        "has_more": offset + len(posts) < total_posts
+    })
 
 
 @app.route("/run-agent", methods=["POST"])

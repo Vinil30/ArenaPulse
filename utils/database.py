@@ -12,3 +12,14 @@ class Database:
 
     def save_post(self, post):
         self.news.insert_one(post)
+
+    def get_latest_posts(self, limit=9, skip=0):
+        return list(
+            self.news.find()
+            .sort("_id", -1)
+            .skip(skip)
+            .limit(limit)
+        )
+
+    def count_posts(self):
+        return self.news.count_documents({})
