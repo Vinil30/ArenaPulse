@@ -710,6 +710,33 @@ body::after {
     color: var(--fog);
 }
 
+.load-more-wrap {
+    position: relative;
+    z-index: 10;
+    max-width: 1440px;
+    margin: -60px auto 90px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: center;
+}
+.load-more-btn {
+    min-width: 180px;
+    padding: 13px 28px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: transparent;
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: border-color 0.3s, color 0.3s, opacity 0.3s;
+}
+.load-more-btn:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+.load-more-btn:disabled { opacity: 0.6; cursor: wait; }
+.load-more-wrap[hidden] { display: none; }
+
 /* ── MODAL ────────────────────────────────────── */
 .modal-backdrop {
     position: fixed;
@@ -859,6 +886,7 @@ body::after {
     .hero-actions { align-items: flex-start; }
     .section-header { padding: 32px 20px 20px; }
     .grid { padding: 0 0 80px; grid-template-columns: 1fr; }
+    .load-more-wrap { margin-top: -40px; padding: 0 20px; }
     body { cursor: auto; }
     #cursor-dot, #cursor-ring { display: none; }
 }
@@ -951,11 +979,11 @@ body::after {
 <!-- SECTION HEADER -->
 <div class="section-header">
     <span class="section-title">Latest Editions</span>
-    <span class="section-count">{{ posts|length }} Articles</span>
+    <span class="section-count" id="articleCount">{{ posts|length }} / {{ total_posts }} Articles</span>
 </div>
 
 <!-- GRID -->
-<div class="grid" id="grid">
+<div class="grid" id="grid" data-total="{{ total_posts }}" data-page-size="{{ post_page_size }}">
     {% for post in posts %}
     <article class="card" data-index="{{ loop.index0 }}" onclick="openModal({{ loop.index0 }})">
         <span class="card-num">{{ '%02d' % loop.index }}</span>
@@ -994,6 +1022,10 @@ body::after {
     {% endfor %}
 </div>
 
+<div class="load-more-wrap" id="loadMoreWrap" {% if posts|length >= total_posts %}hidden{% endif %}>
+    <button class="load-more-btn" id="loadMoreBtn" type="button">Load More</button>
+</div>
+
 <!-- MODAL -->
 <div class="modal-backdrop" id="modalBackdrop" onclick="handleBackdropClick(event)">
     <div class="modal-box" id="modalBox" onclick="event.stopPropagation()">
@@ -1022,11 +1054,13 @@ const posts = [
         title: {{ post.title|tojson }},
         content: {{ post.content|tojson }},
         topic: {{ post.topic|tojson }},
-        source_url: {{ post.source_url|tojson }},
-        image: {% if post.image %}"data:image/jpeg;base64,{{ post.image }}"{% else %}null{% endif %}
+        source_url: {{ post.source_url|tojson }}
     },
     {% endfor %}
 ];
+let loadedCount = posts.length;
+let totalPosts = {{ total_posts }};
+const pageSize = {{ post_page_size }};
 
 // ── CURSOR ──────────────────────────────────────────────
 const dot  = document.getElementById('cursor-dot');
@@ -1034,13 +1068,14 @@ const ring = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
 (function animRing() { rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
-document.querySelectorAll('button, a, .card, .modal-source-btn').forEach(el => {
+function bindCursorHover(el) {
     el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
     el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-});
+}
+document.querySelectorAll('button, a, .card, .modal-source-btn').forEach(bindCursorHover);
 
 // ── CARD INTERACTIONS ──────────────────────────────────
-document.querySelectorAll('.card').forEach(card => {
+function bindCardInteractions(card) {
     let animFrame;
     let currentRX = 0, currentRY = 0, targetRX = 0, targetRY = 0;
 
@@ -1099,7 +1134,8 @@ document.querySelectorAll('.card').forEach(card => {
         card.appendChild(ripple);
         setTimeout(() => ripple.remove(), 750);
     });
-});
+}
+document.querySelectorAll('.card').forEach(bindCardInteractions);
 
 // inject ripple keyframe
 const rippleStyle = document.createElement('style');
@@ -1158,7 +1194,6 @@ document.head.appendChild(rippleStyle);
 })();
 
 // ── SCROLL REVEAL ───────────────────────────────────────
-const cards = document.querySelectorAll('.card');
 const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
@@ -1168,7 +1203,10 @@ const observer = new IntersectionObserver(entries => {
         }
     });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-cards.forEach(c => observer.observe(c));
+function observeCard(card) {
+    observer.observe(card);
+}
+document.querySelectorAll('.card').forEach(observeCard);
 
 // ── NAV SCROLL ──────────────────────────────────────────
 window.addEventListener('scroll', () => {
@@ -1176,11 +1214,107 @@ window.addEventListener('scroll', () => {
 });
 
 // ── IMAGE LOAD ──────────────────────────────────────────
-document.querySelectorAll('.card-image-wrap img').forEach(img => {
+function bindImageLoaded(img) {
     const wrap = img.closest('.card-image-wrap');
     const done = () => { img.classList.add('loaded'); wrap.classList.add('loaded'); };
     if (img.complete) done(); else { img.addEventListener('load', done); img.addEventListener('error', done); }
-});
+}
+document.querySelectorAll('.card-image-wrap img').forEach(bindImageLoaded);
+
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+}
+
+function cardHtml(post, index) {
+    const imageHtml = post.image ? `
+        <div class="card-image-wrap" data-img-wrap>
+            <div class="card-shimmer"></div>
+            <img
+                src="data:image/jpeg;base64,${post.image}"
+                alt="${escapeHtml(post.title)}"
+                loading="lazy"
+                decoding="async"
+            >
+        </div>
+    ` : '';
+
+    return `
+        <article class="card" data-index="${index}" onclick="openModal(${index})">
+            <span class="card-num">${String(index + 1).padStart(2, '0')}</span>
+            ${imageHtml}
+            <div class="card-progress"></div>
+            <div class="card-body">
+                <div class="card-topic">${escapeHtml(post.topic)}</div>
+                <h2 class="card-title">${escapeHtml(post.title)}</h2>
+                <p class="card-excerpt">${escapeHtml(post.content)}</p>
+                <div class="card-footer">
+                    <span style="font-family:var(--font-display);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-4)">March 2026</span>
+                    <button class="card-read" onclick="event.stopPropagation(); openModal(${index})">
+                        Read
+                        <svg viewBox="0 0 14 14" fill="none"><path d="M1 7H13M8 2L13 7L8 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+            </div>
+        </article>
+    `;
+}
+
+function updateArticleCount() {
+    document.getElementById('articleCount').textContent = `${loadedCount} / ${totalPosts} Articles`;
+    document.getElementById('loadMoreWrap').hidden = loadedCount >= totalPosts;
+}
+
+function hydrateCard(card) {
+    bindCursorHover(card);
+    card.querySelectorAll('button, a').forEach(bindCursorHover);
+    bindCardInteractions(card);
+    observeCard(card);
+    card.querySelectorAll('.card-image-wrap img').forEach(bindImageLoaded);
+}
+
+async function loadMorePosts() {
+    const btn = document.getElementById('loadMoreBtn');
+    btn.disabled = true;
+    btn.textContent = 'Loading';
+
+    try {
+        const response = await fetch(`/api/posts?offset=${loadedCount}&limit=${pageSize}`);
+        if (!response.ok) throw new Error('Failed to load posts');
+        const data = await response.json();
+        const grid = document.getElementById('grid');
+
+        data.posts.forEach(post => {
+            const index = posts.length;
+            posts.push({
+                title: post.title,
+                content: post.content,
+                topic: post.topic,
+                source_url: post.source_url,
+                image: post.image ? `data:image/jpeg;base64,${post.image}` : null
+            });
+            grid.insertAdjacentHTML('beforeend', cardHtml(post, index));
+            hydrateCard(grid.lastElementChild);
+        });
+
+        loadedCount = posts.length;
+        totalPosts = data.total;
+        updateArticleCount();
+    } catch (error) {
+        alert('Could not load more articles. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Load More';
+    }
+}
+
+document.getElementById('loadMoreBtn')?.addEventListener('click', loadMorePosts);
+updateArticleCount();
 
 // ── RUN AGENT ───────────────────────────────────────────
 function runAgent() {
@@ -1199,6 +1333,8 @@ function runAgent() {
 function openModal(idx) {
     const p = posts[idx];
     if (!p) return;
+    const cardImage = document.querySelector(`.card[data-index="${idx}"] img`);
+    const imageSrc = p.image || cardImage?.src;
 
     document.getElementById('modalTitle').textContent = p.title;
     document.getElementById('modalBody').textContent  = p.content;
@@ -1207,7 +1343,7 @@ function openModal(idx) {
 
     const img = document.getElementById('modalImg');
     const hero = document.getElementById('modalHero');
-    if (p.image) { img.src = p.image; img.alt = p.title; img.style.display='block'; hero.style.display=''; }
+    if (imageSrc) { img.src = imageSrc; img.alt = p.title; img.style.display='block'; hero.style.display=''; }
     else { img.style.display='none'; hero.style.display='none'; }
 
     document.getElementById('modalBackdrop').classList.add('open');
